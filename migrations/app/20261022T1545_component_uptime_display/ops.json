@@ -1,0 +1,64 @@
+[
+  {
+    "id": "column.status_page.ServiceComponent.showUptime",
+    "label": "Add column \"showUptime\" to \"ServiceComponent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "status_page",
+        "objectType": "column",
+        "name": "showUptime",
+        "table": "ServiceComponent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"showUptime\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "status_page",
+          "ServiceComponent",
+          "showUptime"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"showUptime\"",
+        "sql": "ALTER TABLE \"status_page\".\"ServiceComponent\" ADD COLUMN \"showUptime\" bool DEFAULT false NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"showUptime\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "status_page",
+          "ServiceComponent",
+          "showUptime"
+        ]
+      },
+      {
+        "description": "verify column \"showUptime\" has type \"boolean\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "status_page",
+          "ServiceComponent",
+          "showUptime",
+          "boolean"
+        ]
+      },
+      {
+        "description": "verify column \"showUptime\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "status_page",
+          "ServiceComponent",
+          "showUptime",
+          "NO"
+        ]
+      }
+    ]
+  }
+]

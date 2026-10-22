@@ -1,0 +1,17 @@
+node_modules
+.next
+out
+.git
+.env
+.env.*
+!.env.example
+*.log
+*.tsbuildinfo
+.agents
+.codex
+.impeccable
+coverage
+*.key
+*.pem
+*.zip
+.vscode

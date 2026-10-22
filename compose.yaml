@@ -1,0 +1,32 @@
+services:
+  migrate:
+    build:
+      context: .
+      target: tooling
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL in .env}
+    restart: "no"
+  web:
+    build:
+      context: .
+      target: runner
+    env_file: .env
+    environment:
+      PORT: "5678"
+      HOSTNAME: "0.0.0.0"
+    ports:
+      - "127.0.0.1:3000:5678"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+  worker:
+    build:
+      context: .
+      target: worker
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL in .env}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped

@@ -1,0 +1,224 @@
+[
+  {
+    "id": "table.MonitorResult",
+    "label": "Create table \"MonitorResult\"",
+    "summary": "Creates table \"MonitorResult\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "status_page",
+        "objectType": "table",
+        "name": "MonitorResult"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"MonitorResult\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"status_page\".\"MonitorResult\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"MonitorResult\"",
+        "sql": "CREATE TABLE \"status_page\".\"MonitorResult\" (\n  \"checkedAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"componentId\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"latencyMs\" int4 NOT NULL,\n  \"status\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"MonitorResult\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"status_page\".\"MonitorResult\"",
+          "r",
+          "p"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.ServiceMonitor",
+    "label": "Create table \"ServiceMonitor\"",
+    "summary": "Creates table \"ServiceMonitor\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "status_page",
+        "objectType": "table",
+        "name": "ServiceMonitor"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"ServiceMonitor\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"status_page\".\"ServiceMonitor\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"ServiceMonitor\"",
+        "sql": "CREATE TABLE \"status_page\".\"ServiceMonitor\" (\n  \"checkedAt\" timestamptz,\n  \"componentId\" text NOT NULL,\n  \"enabled\" bool DEFAULT true NOT NULL,\n  \"error\" text,\n  \"failureThreshold\" int4 DEFAULT 3 NOT NULL,\n  \"failures\" int4 DEFAULT 0 NOT NULL,\n  \"intervalSeconds\" int4 DEFAULT 60 NOT NULL,\n  \"kind\" text NOT NULL,\n  \"latencyMs\" int4,\n  \"matches\" text DEFAULT '' NOT NULL,\n  \"nextCheckAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"port\" int4 DEFAULT 443 NOT NULL,\n  \"revision\" text NOT NULL,\n  \"status\" text DEFAULT 'unknown' NOT NULL,\n  \"target\" text NOT NULL,\n  \"timeoutSeconds\" int4 DEFAULT 10 NOT NULL,\n  PRIMARY KEY (\"componentId\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"ServiceMonitor\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"status_page\".\"ServiceMonitor\"",
+          "r",
+          "p"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.status_page.ServiceComponent.statusUrl",
+    "label": "Add column \"statusUrl\" to \"ServiceComponent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "status_page",
+        "objectType": "column",
+        "name": "statusUrl",
+        "table": "ServiceComponent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"statusUrl\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "status_page",
+          "ServiceComponent",
+          "statusUrl"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"statusUrl\"",
+        "sql": "ALTER TABLE \"status_page\".\"ServiceComponent\" ADD COLUMN \"statusUrl\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"statusUrl\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "status_page",
+          "ServiceComponent",
+          "statusUrl"
+        ]
+      },
+      {
+        "description": "verify column \"statusUrl\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "status_page",
+          "ServiceComponent",
+          "statusUrl",
+          "text"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.MonitorResult.MonitorResult_componentId_checkedAt_idx_a1661c8f",
+    "label": "Create index \"MonitorResult_componentId_checkedAt_idx_a1661c8f\" on \"MonitorResult\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "status_page",
+        "objectType": "index",
+        "name": "MonitorResult_componentId_checkedAt_idx_a1661c8f",
+        "table": "MonitorResult"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"MonitorResult_componentId_checkedAt_idx_a1661c8f\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"status_page\".\"MonitorResult_componentId_checkedAt_idx_a1661c8f\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"MonitorResult_componentId_checkedAt_idx_a1661c8f\"",
+        "sql": "CREATE INDEX \"MonitorResult_componentId_checkedAt_idx_a1661c8f\" ON \"status_page\".\"MonitorResult\" (\"componentId\", \"checkedAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"MonitorResult_componentId_checkedAt_idx_a1661c8f\" exists on \"MonitorResult\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"status_page\".\"MonitorResult_componentId_checkedAt_idx_a1661c8f\"",
+          "i",
+          "I",
+          "\"status_page\".\"MonitorResult\"",
+          "btree",
+          "[\"componentId\",\"checkedAt\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ServiceMonitor.ServiceMonitor_nextCheckAt_idx_271e69e8",
+    "label": "Create index \"ServiceMonitor_nextCheckAt_idx_271e69e8\" on \"ServiceMonitor\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "status_page",
+        "objectType": "index",
+        "name": "ServiceMonitor_nextCheckAt_idx_271e69e8",
+        "table": "ServiceMonitor"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ServiceMonitor_nextCheckAt_idx_271e69e8\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"status_page\".\"ServiceMonitor_nextCheckAt_idx_271e69e8\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ServiceMonitor_nextCheckAt_idx_271e69e8\"",
+        "sql": "CREATE INDEX \"ServiceMonitor_nextCheckAt_idx_271e69e8\" ON \"status_page\".\"ServiceMonitor\" (\"nextCheckAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ServiceMonitor_nextCheckAt_idx_271e69e8\" exists on \"ServiceMonitor\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"status_page\".\"ServiceMonitor_nextCheckAt_idx_271e69e8\"",
+          "i",
+          "I",
+          "\"status_page\".\"ServiceMonitor\"",
+          "btree",
+          "[\"nextCheckAt\"]"
+        ]
+      }
+    ]
+  }
+]

@@ -1,4 +1,4 @@
-# Self-hosted status page
+# UptimeRelay
 
 Run your own status page with customizable branding, an invite-only staff area, incident publishing, grouped services, and automated monitoring.
 
@@ -35,8 +35,8 @@ The shell commands below use Bash on Linux.
 ## 1. Download the application
 
 ```bash
-git clone https://github.com/NaniteNetworksInc/status-page.git
-cd status-page
+git clone https://github.com/NaniteNetworksInc/uptimerelay.git
+cd uptimerelay
 cp .env.example .env
 ```
 
@@ -266,7 +266,7 @@ docker compose logs --tail=100 web worker
 
 Do not continue if the migration command fails. Migrations run against the configured database; returning to an older image does not automatically reverse schema changes. Do not re-run sample imports as part of an upgrade.
 
-### Upgrade from the original Nanite-specific configuration
+### Upgrade an existing installation to owner-based settings
 
 Existing accounts receive the `staff` role in the customization migration, and first-run setup stays closed. After applying the migration, an authorized server operator can designate the existing owner and initialize branding:
 
@@ -327,6 +327,6 @@ yarn build
 
 Database integration checks under `tests/*-db-check.ts` require a configured test database and roll back their temporary records. They are separate from ordinary unit tests.
 
-## License and branding
+## License
 
-This project is licensed under the [MIT License](LICENSE). The Nanite Networks Inc. name and logo are trademarks of Nanite Networks Inc. Use of the name or logo in your own branding is not permitted without permission.
+UptimeRelay is released under the [MIT License](LICENSE). Copyright (c) 2026 Nanite Networks, Inc. Your installation's uploaded branding belongs to its respective owners.

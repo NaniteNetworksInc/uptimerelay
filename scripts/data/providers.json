@@ -1,0 +1,11 @@
+[
+  { "name": "Cloudflare", "url": "https://www.cloudflarestatus.com/", "feed": "https://www.cloudflarestatus.com/api/v2/components.json", "components": [{ "name": "Network", "match": "Network" }, { "name": "CDN", "match": "CDN/Cache" }, { "name": "Pages", "match": "Pages" }, { "name": "Workers", "match": "Workers" }] },
+  { "name": "Bunny.net", "url": "https://status.bunny.net/", "feed": "https://status.bunny.net/api/v2/components.json", "components": [{ "name": "CDN", "match": "CDN" }, { "name": "DNS", "match": "DNS" }] },
+  { "name": "Stripe", "url": "https://status.stripe.com/", "feed": null, "components": [{ "name": "API", "match": null }, { "name": "Dashboard", "match": null }] },
+  { "name": "Amazon SES", "url": "https://health.aws.amazon.com/health/status", "feed": null, "components": [{ "name": "Amazon SES", "match": null }] },
+  { "name": "Twilio SMS", "url": "https://status.twilio.com/", "feed": "https://status.twilio.com/api/v2/components.json", "components": [{ "name": "Twilio SMS", "match": "Programmable Messaging API" }] },
+  { "name": "Slack API", "url": "https://slack-status.com/", "feed": null, "components": [{ "name": "Slack API", "match": null }] },
+  { "name": "Discord API", "url": "https://discordstatus.com/", "feed": "https://discordstatus.com/api/v2/components.json", "components": [{ "name": "Discord API", "match": "API" }] },
+  { "name": "GitHub API", "url": "https://www.githubstatus.com/", "feed": "https://www.githubstatus.com/api/v2/components.json", "components": [{ "name": "GitHub API", "match": "API Requests" }] },
+  { "name": "Notion API", "url": "https://www.notion-status.com/", "feed": null, "components": [{ "name": "Notion API", "match": null }] }
+]

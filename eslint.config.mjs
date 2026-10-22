@@ -12,6 +12,14 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Prisma-generated artifacts are checked by TypeScript, not hand-edited lint rules.
+    "src/prisma/contract.d.ts",
+    "migrations/**",
+    ".agents/**",
+    ".devin/**",
+    ".claude/**",
+    ".cursor/**",
+    ".codex/**",
   ]),
 ]);
 

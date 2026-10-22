@@ -1,0 +1,19 @@
+[
+  {
+    "name": "Infrastructure",
+    "description": "Core infrastructure",
+    "components": [
+      "Network",
+      "Compute",
+      "Storage"
+    ]
+  },
+  {
+    "name": "Customer services",
+    "description": "Customer-facing services",
+    "components": [
+      "Website",
+      "Control panel"
+    ]
+  }
+]

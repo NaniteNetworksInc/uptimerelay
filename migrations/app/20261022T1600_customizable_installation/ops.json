@@ -1,0 +1,105 @@
+[
+  {
+    "id": "table.SiteSettings",
+    "label": "Create table \"SiteSettings\"",
+    "summary": "Creates table \"SiteSettings\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "status_page",
+        "objectType": "table",
+        "name": "SiteSettings"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"SiteSettings\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"status_page\".\"SiteSettings\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"SiteSettings\"",
+        "sql": "CREATE TABLE \"status_page\".\"SiteSettings\" (\n  \"accent\" text NOT NULL,\n  \"buttonColor\" text NOT NULL,\n  \"copyright\" text NOT NULL,\n  \"description\" text NOT NULL,\n  \"favicon\" text,\n  \"id\" text NOT NULL,\n  \"logo\" text,\n  \"name\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"SiteSettings\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"status_page\".\"SiteSettings\"",
+          "r",
+          "p"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.status_page.StaffAccount.role",
+    "label": "Add column \"role\" to \"StaffAccount\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "status_page",
+        "objectType": "column",
+        "name": "role",
+        "table": "StaffAccount"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"role\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "status_page",
+          "StaffAccount",
+          "role"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"role\"",
+        "sql": "ALTER TABLE \"status_page\".\"StaffAccount\" ADD COLUMN \"role\" text DEFAULT 'staff' NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"role\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "status_page",
+          "StaffAccount",
+          "role"
+        ]
+      },
+      {
+        "description": "verify column \"role\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "status_page",
+          "StaffAccount",
+          "role",
+          "text"
+        ]
+      },
+      {
+        "description": "verify column \"role\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "status_page",
+          "StaffAccount",
+          "role",
+          "NO"
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,152 @@
+// use prisma-8
+
+namespace status_page {
+  model User {
+    id        Int      @id @default(autoincrement())
+    email     String   @unique
+    username  String?
+    name      String?
+    posts     Post[]
+    createdAt TimestamptzString @default(now())
+    updatedAt temporal.updatedAtString()
+  }
+
+  model Post {
+    id        Int      @id @default(autoincrement())
+    title     String
+    content   String?
+    author    User     @relation(fields: [authorId], references: [id])
+    authorId  Int
+    createdAt TimestamptzString @default(now())
+    updatedAt temporal.updatedAtString()
+  }
+
+  model StaffAccount {
+    role              String @default("staff")
+    avatar            String?
+    mfaEnabled        Boolean @default(false)
+    mfaSecret         String?
+    mfaLastStep       Int @default(-1)
+    mfaRecoveryHashes String[] @default([])
+    id                String @id
+    email             String @unique
+    name              String
+    passwordHash      String
+    createdAt         TimestamptzString @default(now())
+  }
+
+  model StaffInvite {
+    revokedAt TimestamptzString?
+    invitedBy String?
+    id        String @id
+    email     String
+    tokenHash String @unique
+    expiresAt TimestamptzString
+    usedAt    TimestamptzString?
+    createdAt TimestamptzString @default(now())
+  }
+
+  model StaffSession {
+    tokenHash String @id
+    staffId   String
+    expiresAt TimestamptzString
+    createdAt TimestamptzString @default(now())
+
+    @@index([staffId])
+  }
+
+  model StaffLoginThrottle {
+    id       String @id
+    attempts Int @default(0)
+  }
+
+  model Incident {
+    id               String @id
+    title            String
+    severity         String
+    status           String
+    affectedServices String[]
+    published        Boolean @default(false)
+    createdBy        String
+    createdAt        TimestamptzString @default(now())
+    updatedAt        TimestamptzString
+  }
+
+  model IncidentUpdate {
+    id         String @id
+    incidentId String
+    message    String
+    status     String
+    createdBy  String
+    createdAt  TimestamptzString @default(now())
+
+    @@index([incidentId])
+  }
+
+  model ServiceGroup {
+    id          String @id
+    name        String @unique
+    description String
+    createdAt   TimestamptzString @default(now())
+  }
+
+  model ServiceComponent {
+    showUptime Boolean @default(false)
+    statusUrl String?
+    id        String @id
+    groupId   String
+    name      String
+    status    String @default("operational")
+    enabled   Boolean @default(true)
+    createdAt TimestamptzString @default(now())
+
+    @@unique([groupId, name])
+  }
+
+  model StaffMfaSetup {
+    staffId         String @id
+    encryptedSecret String
+    sessionHash     String
+    expiresAt       TimestamptzString
+  }
+
+  model ServiceMonitor {
+    componentId String @id
+    kind String
+    target String
+    port Int @default(443)
+    matches String @default("")
+    intervalSeconds Int @default(60)
+    timeoutSeconds Int @default(10)
+    failureThreshold Int @default(3)
+    enabled Boolean @default(true)
+    status String @default("unknown")
+    failures Int @default(0)
+    checkedAt TimestamptzString?
+    latencyMs Int?
+    error String?
+    revision String
+    nextCheckAt TimestamptzString @default(now())
+    @@index([nextCheckAt])
+  }
+
+  model MonitorResult {
+    id String @id
+    componentId String
+    status String
+    latencyMs Int
+    checkedAt TimestamptzString @default(now())
+    @@index([componentId, checkedAt])
+  }
+
+  model SiteSettings {
+    id String @id
+    name String
+    description String
+    copyright String
+    logo String?
+    favicon String?
+    accent String
+    buttonColor String
+  }
+}

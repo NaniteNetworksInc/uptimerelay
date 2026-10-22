@@ -1,0 +1,22 @@
+[Unit]
+Description=UptimeRelay service monitoring worker
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=uptimerelay
+Group=uptimerelay
+WorkingDirectory=/opt/uptimerelay
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/node /opt/uptimerelay/scripts/monitor.ts
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=40
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target
